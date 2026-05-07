@@ -72,7 +72,7 @@ $ export AWS_SECRET_ACCESS_KEY=VInXxOfGtEIwVck4AdtUDavmJf/qt3jaJEAvSKZO
 | tagging | string | The tag-set for the object. The tag-set must be formatted as such: `'tag1=value1&tag2=value2'`. Used for `put`, `puttagging`, `putget` and `putget9010r` |
 | tagging-directive | string | Specifies whether the object tag-set is copied from the source object or if it is replaced with the tag-set provided in the object copy request. Value must be one of 'COPY' or 'REPLACE'. Default: `COPY` |
 | tier | string | The retrieval option for restoring an object. One of `expedited`, `standard`, or `bulk`. AWS default option is standard if not specified. Default: `standard` |
-| uniformDist | string | Generates a uniform distribution of object sizes given a min-max size. Allowed values: `10` to `20` |
+| uniformDist | string | Generates a uniform distribution of object sizes given a min-max size (inclusive). uniformDist overrides `size`. Ex.: Use `-uniformDist=1000-2000` to generate an object between 1000 and 2000 bytes in size. |
 | verify | int | Verify the retrieved data on a get operation. `0`: disable verify (default); `1`: normal put data, `2`: multipart put data. If verify equals `2`, partsize is required (default `partsize` is `5242880` bytes) |
 | workload | string | File path to a JSON file that describes a workload to be run. The file is parsed with the Go template package and must produce JSON that is valid according to the workload schema |
 

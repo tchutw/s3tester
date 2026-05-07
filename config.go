@@ -26,7 +26,7 @@ const (
 
 	randomRangeWithoutGetErr    = "the operation type for random-range must be 'get'"
 	randomRangeWithRangeErr     = "random-range and range cannot be set at the same time"
-	randomRangeInvalidMinMaxErr = "random-range must be in the form '<min>-<max>/<size>', where min >= 0, max > 0, and min < max"
+	randomRangeInvalidMinMaxErr = "random-range must be in the form '<min>-<max>/<size>', where min >= 0, max >= 0, and min <= max"
 	randomRangeInvalidSizeErr   = "random-range must be in the form '<min>-<max>/<size>', where size > 0 and size <= max-min+1"
 	randomRangeInvalidFormat    = "random-range must be in the form '<min>-<max>/<size>'"
 )
@@ -290,7 +290,7 @@ Note: Requests are generated in the same order that you specify operations. That
 	flags.StringVar(&params.Tagging, "tagging", "", "The tag-set for the object. The tag-set must be formatted as such: 'tag1=value1&tag2=value2'. Used for put, puttagging, putget and putget9010r.")
 	flags.StringVar(&params.TaggingDirective, "tagging-directive", directiveCopy, "Specifies whether the object tag-set is copied from the source object or if it is replaced with the tag-set provided in the object copy request. Value must be one of 'COPY' or 'REPLACE'")
 	flags.StringVar(&params.Tier, "tier", "standard", "The retrieval option for restoring an object. One of expedited, standard, or bulk. AWS default option is standard if not specified")
-	flags.StringVar(&params.UniformDist, "uniformDist", "", "Generates a uniform distribution of object sizes given a min-max size (10-20)")
+	flags.StringVar(&params.UniformDist, "uniformDist", "", "Generates a uniform distribution of object sizes given a min-max size (inclusive). uniformDist overrides -size. Ex.: Use -uniformDist=1000-2000 to generate an object between 1000 and 2000 bytes in size.")
 	flags.IntVar(&params.Verify, "verify", 0, "Verify the retrieved data on a get operation (0=disable verify(default), 1=normal put data, 2=multipart put data). If verify=2, partsize is required and default partsize is set to 5242880.")
 
 	flags.Usage = func() {
@@ -567,7 +567,7 @@ func setupParam(args *Parameters) error {
 
 	args.min, args.max, err = extractRangeMinMax(args.UniformDist)
 	if err != nil {
-		return errors.New("uniformDist must be in form 'min-max', where min and max are > 0, min < max")
+		return errors.New("uniformDist must be in form 'min-max', where min and max are >= 0, min <= max")
 	}
 
 	// validate random-range
@@ -646,8 +646,8 @@ func extractRangeMinMax(arg string) (min int64, max int64, err error) {
 	}
 
 	max, err = strconv.ParseInt(boundaries[1], 10, 64)
-	if err != nil || max <= 0 {
-		return 0, 0, errors.New("max must be > 0 and an integer")
+	if err != nil || max < 0 {
+		return 0, 0, errors.New("max must be >= 0 and an integer")
 	}
 
 	if min > max {
