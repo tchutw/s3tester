@@ -4,6 +4,7 @@
 ### Changed
 - Fixed a bug in validation of range-based arguments
 - Fixed some incorrect text for uniformDist
+- Fix a bug with uniformDist introduced in 3.2.1
 
 ## v3.2.1
 ### Added
